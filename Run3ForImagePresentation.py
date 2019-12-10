@@ -3,6 +3,9 @@ import numpy as np
 import cv2
 import os
 from sklearn import preprocessing
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 def cv_show(name, image):
     cv2.imshow(name, image)
@@ -16,40 +19,13 @@ def cosine_disntance(vec1, vec2):
 
 
 def gen_sift_features(gray, step_size):
-    # lower_gray = cv2.pyrDown(gray)   
+
     dense = cv2.xfeatures2d.SIFT_create(103)
     kp = [cv2.KeyPoint(x, y, step_size) for y in range(0, gray.shape[0], step_size) for x in range(0, gray.shape[1], step_size)]
     kp, desc = dense.compute(gray, kp)
     return kp, desc
 
-def get_dense_sampling_images(path, dim=8):
-    # Number of each class (each class contains 100 pictures)
-    N = 100
 
-    # Classes dictionary
-    Classes = ['bedroom', 'Coast', 'Forest', 'Highway', 'industrial', 'Insidecity', 'kitchen',
-               'livingroom', 'Mountain', 'Office', 'OpenCountry', 'store', 'Street', 'Suburb', 'TallBuilding']
-    dict = {'bedroom': 1, 'Coast': 2, 'Forest': 3, 'Highway': 4, 'industrial': 5, 'Insidecity': 6,
-            'kitchen': 7, 'livingroom': 8, 'Mountain': 9, 'Office': 10, 'OpenCountry': 11, 'store': 12,
-            'Street': 13, 'Suburb': 14, 'TallBuilding': 15}
-
-    # set dimension of each picture
-    d = dim ** 2
-
-    # Initialization
-    dense_sampling_image_total = np.zeros((1,128))
-    dense_sampling_images = []
-    #
-    label = []
-    for Class in Classes:
-        for i in range(N):
-            img = cv2.imread(os.path.join(path,'training', Class, str(i)+'.jpg'), cv2.IMREAD_GRAYSCALE)
-            kp, desc = gen_sift_features(img, 4)                                  #每张图片的数组 e.g. 2000*128
-            dense_sampling_image_total = np.vstack((dense_sampling_image_total,desc))
-            dense_sampling_images.append(desc)
-            label.append(dict[Class])
-
-    return dense_sampling_image_total[1:,:], dense_sampling_images, label
 
 def create_txt(label_test,path,file_test):
     
@@ -86,13 +62,14 @@ def load_test(path):                        #测试集
             continue
         file_test.append(filename)
     file_test.sort(key=lambda x:int(x[:-4]))
+
+    
     return file_test
 
 def load_test_image(file_test,path):    #测试集
     
     N=len(file_test)
     # set dimension of each picture
-    d = dim ** 2
 
     # Initialization
     dense_sampling_image_total = np.zeros((1,128))
@@ -105,6 +82,35 @@ def load_test_image(file_test,path):    #测试集
         dense_sampling_images.append(desc)
     return dense_sampling_image_total[1:,:], dense_sampling_images
 
+
+def get_dense_sampling_images(path, dim=8):
+    # Number of each class (each class contains 100 pictures)
+    N = 100
+
+    # Classes dictionary
+    Classes = ['bedroom', 'Coast', 'Forest', 'Highway', 'industrial', 'Insidecity', 'kitchen',
+               'livingroom', 'Mountain', 'Office', 'OpenCountry', 'store', 'Street', 'Suburb', 'TallBuilding']
+    dict = {'bedroom': 1, 'Coast': 2, 'Forest': 3, 'Highway': 4, 'industrial': 5, 'Insidecity': 6,
+            'kitchen': 7, 'livingroom': 8, 'Mountain': 9, 'Office': 10, 'OpenCountry': 11, 'store': 12,
+            'Street': 13, 'Suburb': 14, 'TallBuilding': 15}
+
+    # set dimension of each picture
+    d = dim ** 2
+
+    # Initialization
+    dense_sampling_image_total = np.zeros((1,128))
+    dense_sampling_images = []
+    #
+    label = []
+    for Class in Classes:
+        for i in range(N):
+            img = cv2.imread(os.path.join(path,'training', Class, str(i)+'.jpg'), cv2.IMREAD_GRAYSCALE)
+            kp, desc = gen_sift_features(img, 4)                                  #每张图片的数组 e.g. 2000*128
+            dense_sampling_image_total = np.vstack((dense_sampling_image_total,desc))
+            dense_sampling_images.append(desc)
+            label.append(dict[Class])
+
+    return dense_sampling_image_total[1:,:], dense_sampling_images, label
     
 #%%
 path = os.path.abspath('.')
@@ -121,7 +127,7 @@ label = np.load('label2.npy')
 
 #%%
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(dense_sampling_images, label, test_size=.3)
+X_train, X_test, y_train, y_test = train_test_split(dense_sampling_images, label, test_size=.15)
 
 
 #%%
@@ -184,15 +190,22 @@ print(clf.score(image_presentation_test, y_test))
 
 
 # %%
+from sklearn.externals import joblib
+from sklearn.cluster import MiniBatchKMeans,KMeans
 path = os.path.abspath('.')
-SiftImage = load_test(path)
-TestingSiftImage = load_test_image(SiftImage,path)
+SiftImage=load_test(r"./testing")
+TestingSiftImageSave ,TestingSiftImage = load_test_image(SiftImage,path)
+print(2)
 
 km_model = joblib.load('kmeans_model3.m')
-GetSiftImage , SiftHistoram = get_image_presentation(Test_SiftImage,km_model)
+GetSiftImage , SiftHistoram = get_image_presentation(TestingSiftImage,km_model)
+print(3)
 std=preprocessing.StandardScaler()
 GetSiftImage = std.fit_transform(GetSiftImage)
 clf = joblib.load("train_model.m")
 label_test=clf.predict(GetSiftImage)
-create_txt(label_test,path,file_test)
+print(4)
+create_txt(label_test,path,SiftImage)
+
+
 
