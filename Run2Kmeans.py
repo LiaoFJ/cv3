@@ -111,7 +111,7 @@ print(X.shape)
 from sklearn.cluster import MiniBatchKMeans,KMeans
 
 # cluster = MiniBatchKMeans(n_clusters=500, batch_size=50)
-cluster = KMeans(n_clusters=500,random_state= 54, max_iter= 5000,n_jobs = 2,n_units = 1,n_init = 2)
+cluster = KMeans(n_clusters=500,random_state= 54, max_iter= 3000,n_jobs = 2,n_init = 2)
 cluster.fit(X)
 from sklearn.externals import joblib
 joblib.dump(cluster, 'kmeans_model3.m')
