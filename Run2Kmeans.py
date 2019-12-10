@@ -29,10 +29,10 @@ class DenseDetector():
         return keypoints[1:,:]
 
 def gen_sift_features(gray, step_size):
-    lower_gray = cv2.pyrDown(gray)      #金字塔  
+    # lower_gray = cv2.pyrDown(gray)      #金字塔  
     dense = cv2.xfeatures2d.SIFT_create(103)
-    kp = [cv2.KeyPoint(x, y, step_size) for y in range(0, lower_gray.shape[0], step_size) for x in range(0, lower_gray.shape[1], step_size)]
-    kp, desc = dense.compute(lower_gray, kp)
+    kp = [cv2.KeyPoint(x, y, step_size) for y in range(0, gray.shape[0], step_size) for x in range(0, gray.shape[1], step_size)]
+    kp, desc = dense.compute(gray, kp)
     return kp, desc
 
 def get_dense_sampling_images(path, dim=8):
