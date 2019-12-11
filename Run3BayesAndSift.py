@@ -29,8 +29,8 @@ def gen_sift_features(gray, step_size):
 def create_txt(label_test,path,file_test):
     
     dict = {'bedroom': 1, 'coast': 2, 'forest': 3, 'highway': 4, 'industrial': 5, 'insidecity': 6,
-            'kitchen': 7, 'livingroom': 8, 'mountain': 9, 'office': 10, 'openCountry': 11, 'store': 12,
-            'street': 13, 'suburb': 14, 'tallBuilding': 15}
+            'kitchen': 7, 'livingroom': 8, 'mountain': 9, 'office': 10, 'opencountry': 11, 'store': 12,
+            'street': 13, 'suburb': 14, 'tallbuilding': 15}
 
     results=[]
     f=open(path+'/test_result_SitfandBayes.txt','w')
@@ -137,8 +137,8 @@ print(X.shape)
 #%%
 from sklearn.cluster import MiniBatchKMeans,KMeans
 
-# cluster = MiniBatchKMeans(n_clusters=500, batch_size=10)
-cluster = KMeans(n_clusters=500,random_state= 54, max_iter= 3000,n_jobs = 2,n_init = 2)
+cluster = MiniBatchKMeans(n_clusters=500, batch_size=10)
+# cluster = KMeans(n_clusters=500,random_state= 54, max_iter= 3000,n_jobs = 2,n_init = 2)
 cluster.fit(X)
 from sklearn.externals import joblib
 joblib.dump(cluster, 'kmeans_model3.m')
