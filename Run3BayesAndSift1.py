@@ -133,7 +133,7 @@ print(X.shape)
 #%%
 from sklearn.cluster import MiniBatchKMeans,KMeans
 
-cluster = MiniBatchKMeans(n_clusters=500, batch_size=10)
+cluster = MiniBatchKMeans(n_clusters=1000, batch_size=10)
 # cluster = KMeans(n_clusters=500,random_state= 54, max_iter= 3000,n_jobs = 2,n_init = 2)
 cluster.fit(X)
 from sklearn.externals import joblib
@@ -167,10 +167,10 @@ image_presentation_test=std.fit_transform(image_presentation_test)
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
 # clf = OneVsRestClassifier(LogisticRegression()).fit(image_presentation_train, y_train)
 # clf = OneVsRestClassifier(SVC()).fit(image_presentation_train, y_train)
-clf = GaussianNB().fit(image_presentation_train,y_train)
+clf = MultinomialNB().fit(image_presentation_train,y_train)
 #%%
 clf.score(image_presentation_test, y_test)
 
