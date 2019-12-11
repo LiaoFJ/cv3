@@ -115,7 +115,7 @@ dense_sampling_image_total, dense_sampling_images, label = get_dense_sampling_im
 print(1)
 #%%
 import numpy as np
-
+dense_sampling_images = np.array(dense_sampling_images)
 
 
 #%%
