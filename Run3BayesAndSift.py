@@ -33,7 +33,7 @@ def create_txt(label_test,path,file_test):
             'street': 13, 'suburb': 14, 'tallBuilding': 15}
 
     results=[]
-    f=open(path+'/test_result_knn.txt','w')
+    f=open(path+'/test_result_SitfandBayes.txt','w')
     for i in range(len(file_test)):
         results.append(file_test[i]+" "+list(dict.keys())[list(dict.values()).index(label_test[i])])
         f.write(file_test[i]+" "+list(dict.keys())[list(dict.values()).index(label_test[i])]+'\n')
