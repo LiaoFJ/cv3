@@ -159,7 +159,10 @@ def get_image_presentation(dense_sampling_images, centroids_model):
 
 image_presentation_train, histograms_train = get_image_presentation(X_train, km_model)
 image_presentation_test, histograms_test = get_image_presentation(X_test, km_model)
-std=preprocessing.StandardScaler()
+std=preprocessing.MinMaxScaler()
+image_presentation_train=std.fit_transform(image_presentation_train)
+image_presentation_test=std.fit_transform(image_presentation_test)
+std=preprocessing.Normalizer()
 image_presentation_train=std.fit_transform(image_presentation_train)
 image_presentation_test=std.fit_transform(image_presentation_test)
 # np.save('image_presentation3.npy', image_presentation)
